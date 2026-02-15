@@ -64,6 +64,10 @@ class GongService:
 
     async def sync_calls(self, db: AsyncSession, days_back: int = 30) -> int:
         """Sync Gong calls and transcripts into the database."""
+        if settings.demo_mode:
+            logger.info("Demo mode: skipping live Gong sync (use seed_data.py for mock data)")
+            return 0
+
         calls = await self.fetch_calls(days_back=days_back)
         synced_count = 0
 

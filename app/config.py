@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     gong_access_key: str = ""
     gong_access_key_secret: str = ""
 
+    # Demo mode (runs without real API keys)
+    demo_mode: bool = True
+
     # Nurture settings
     nurture_check_interval_hours: int = 24
     nurture_days_before_close: int = 90

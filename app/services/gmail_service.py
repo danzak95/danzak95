@@ -100,6 +100,10 @@ class GmailService:
 
     async def sync_emails(self, db: AsyncSession, max_results: int = 100) -> int:
         """Sync emails from Gmail into the database and link to prospects."""
+        if settings.demo_mode:
+            logger.info("Demo mode: skipping live Gmail sync (use seed_data.py for mock data)")
+            return 0
+
         emails = self.fetch_emails(max_results=max_results)
         synced_count = 0
 
@@ -162,6 +166,10 @@ class GmailService:
 
     def send_email(self, to: str, subject: str, body: str) -> dict:
         """Send an email via Gmail."""
+        if settings.demo_mode:
+            logger.info(f"Demo mode: would send email to {to} - {subject}")
+            return {"id": "demo-message", "labelIds": ["SENT"]}
+
         service = self._get_service()
 
         message = MIMEText(body, "html")

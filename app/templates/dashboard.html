@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Pipeline</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a2e; }
+
+        .header { background: #1a1a2e; color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; font-weight: 600; }
+        .header .demo-badge { background: #f59e0b; color: #1a1a2e; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+        /* Stats row */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .stat-card .label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+        .stat-card .value.green { color: #10b981; }
+        .stat-card .value.blue { color: #3b82f6; }
+        .stat-card .value.amber { color: #f59e0b; }
+        .stat-card .value.red { color: #ef4444; }
+
+        /* Section */
+        .section { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; overflow: hidden; }
+        .section-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .section-header h2 { font-size: 16px; font-weight: 600; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; background: #f9fafb; }
+        td { padding: 12px 16px; font-size: 14px; border-top: 1px solid #f0f0f0; }
+        tr:hover td { background: #f9fafb; }
+
+        /* Stage badges */
+        .stage { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+        .stage-discovery { background: #dbeafe; color: #1d4ed8; }
+        .stage-qualification { background: #e0e7ff; color: #4338ca; }
+        .stage-proposal { background: #fef3c7; color: #92400e; }
+        .stage-negotiation { background: #fed7aa; color: #9a3412; }
+        .stage-contract { background: #d1fae5; color: #065f46; }
+        .stage-verbal { background: #bbf7d0; color: #166534; }
+
+        /* Days indicator */
+        .days-out { font-weight: 600; }
+        .days-urgent { color: #ef4444; }
+        .days-soon { color: #f59e0b; }
+        .days-ok { color: #10b981; }
+
+        /* Activity */
+        .activity-count { display: inline-flex; align-items: center; gap: 4px; margin-right: 12px; font-size: 13px; color: #6b7280; }
+        .activity-count span { font-weight: 600; color: #1a1a2e; }
+
+        /* Nurture list */
+        .nurture-item { padding: 12px 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .nurture-item:first-child { border-top: none; }
+        .nurture-info { flex: 1; }
+        .nurture-info .prospect { font-weight: 600; font-size: 14px; }
+        .nurture-info .subject { color: #6b7280; font-size: 13px; }
+        .nurture-date { font-size: 13px; color: #6b7280; }
+        .nurture-status { padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+        .status-sent { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-due { background: #fee2e2; color: #991b1b; }
+
+        .empty-state { padding: 40px; text-align: center; color: #9ca3af; }
+
+        /* Prospect detail modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; }
+        .modal-close { cursor: pointer; font-size: 20px; color: #9ca3af; background: none; border: none; }
+        .modal-body { padding: 20px 24px; }
+        .modal-section { margin-bottom: 20px; }
+        .modal-section h4 { font-size: 14px; color: #6b7280; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-row { display: flex; gap: 24px; margin-bottom: 12px; }
+        .detail-item { flex: 1; }
+        .detail-item .label { font-size: 12px; color: #9ca3af; }
+        .detail-item .val { font-size: 14px; font-weight: 500; }
+
+        .timeline-item { padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .timeline-type.email { color: #3b82f6; }
+        .timeline-type.call { color: #8b5cf6; }
+        .timeline-type.nurture { color: #10b981; }
+        .timeline-desc { font-size: 14px; margin-top: 2px; }
+        .timeline-date { font-size: 12px; color: #9ca3af; }
+
+        .btn { cursor: pointer; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Sales Pipeline</h1>
+    {% if demo_mode %}<span class="demo-badge">DEMO MODE</span>{% endif %}
+</div>
+
+<div class="container">
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="label">Total Prospects</div>
+            <div class="value blue">{{ summary.total_prospects }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Emails Synced</div>
+            <div class="value">{{ summary.total_emails_synced }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Calls Synced</div>
+            <div class="value">{{ summary.total_calls_synced }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Pending Nurtures</div>
+            <div class="value amber">{{ summary.pending_nurture_emails }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Emails Sent</div>
+            <div class="value green">{{ summary.sent_nurture_emails }}</div>
+        </div>
+    </div>
+
+    <!-- Pipeline table -->
+    <div class="section">
+        <div class="section-header">
+            <h2>Pipeline</h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Prospect</th>
+                    <th>Company</th>
+                    <th>Stage</th>
+                    <th>Close Date</th>
+                    <th>Days Out</th>
+                    <th>Last Contact</th>
+                    <th>Activity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in prospects %}
+                <tr style="cursor:pointer" onclick="showProspect({{ p.id }})">
+                    <td><strong>{{ p.name }}</strong><br><span style="color:#6b7280;font-size:12px">{{ p.email }}</span></td>
+                    <td>{{ p.company or '—' }}</td>
+                    <td><span class="stage stage-{{ p.stage_class }}">{{ p.deal_stage or 'Unknown' }}</span></td>
+                    <td>{{ p.close_date_display }}</td>
+                    <td>
+                        {% if p.days_out is not none %}
+                        <span class="days-out {{ p.days_class }}">{{ p.days_out }}d</span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>{{ p.last_contact_display }}</td>
+                    <td>
+                        <span class="activity-count">Emails: <span>{{ p.email_count }}</span></span>
+                        <span class="activity-count">Calls: <span>{{ p.call_count }}</span></span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not prospects %}
+        <div class="empty-state">No prospects yet. Add some via the API or run seed_data.py.</div>
+        {% endif %}
+    </div>
+
+    <!-- Upcoming nurtures -->
+    <div class="section">
+        <div class="section-header">
+            <h2>Upcoming Nurture Emails</h2>
+            <button class="btn btn-primary btn-sm" onclick="runNurture()">Run Nurture Cycle</button>
+        </div>
+        {% for n in nurtures %}
+        <div class="nurture-item">
+            <div class="nurture-info">
+                <div class="prospect">{{ n.prospect_name }}</div>
+                <div class="subject">{{ n.subject }}</div>
+            </div>
+            <div class="nurture-date">{{ n.scheduled_display }}</div>
+            <span class="nurture-status {{ n.status_class }}">{{ n.status_label }}</span>
+        </div>
+        {% endfor %}
+        {% if not nurtures %}
+        <div class="empty-state">No nurture emails scheduled.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Detail modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modal-title">Prospect Details</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">Loading...</div>
+    </div>
+</div>
+
+<script>
+async function showProspect(id) {
+    document.getElementById('modal').classList.add('active');
+    document.getElementById('modal-body').innerHTML = 'Loading...';
+
+    try {
+        const [prospect, activity] = await Promise.all([
+            fetch('/prospects/' + id).then(r => r.json()),
+            fetch('/prospects/' + id + '/activity').then(r => r.json())
+        ]);
+
+        document.getElementById('modal-title').textContent = prospect.name;
+
+        let html = `
+            <div class="modal-section">
+                <h4>Details</h4>
+                <div class="detail-row">
+                    <div class="detail-item"><div class="label">Email</div><div class="val">${prospect.email}</div></div>
+                    <div class="detail-item"><div class="label">Company</div><div class="val">${prospect.company || '—'}</div></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-item"><div class="label">Stage</div><div class="val">${prospect.deal_stage || '—'}</div></div>
+                    <div class="detail-item"><div class="label">Close Date</div><div class="val">${prospect.expected_close_date || '—'}</div></div>
+                </div>
+                ${prospect.notes ? `<div class="detail-row"><div class="detail-item"><div class="label">Notes</div><div class="val">${prospect.notes}</div></div></div>` : ''}
+            </div>
+            <div class="modal-section">
+                <h4>Activity Timeline</h4>
+        `;
+
+        // Merge and sort all activity
+        let timeline = [];
+        (activity.emails || []).forEach(e => timeline.push({type: 'email', desc: e.subject + ' (' + e.direction + ')', date: e.date, snippet: e.snippet}));
+        (activity.calls || []).forEach(c => timeline.push({type: 'call', desc: c.title, date: c.date, snippet: c.key_topics}));
+        (activity.nurture_emails || []).forEach(n => timeline.push({type: 'nurture', desc: n.subject + (n.sent ? ' (sent)' : ' (scheduled)'), date: n.sent ? n.sent_at : n.scheduled_date}));
+
+        timeline.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        if (timeline.length === 0) {
+            html += '<div class="empty-state">No activity yet.</div>';
+        }
+
+        timeline.forEach(item => {
+            const d = new Date(item.date);
+            const dateStr = d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+            html += `
+                <div class="timeline-item">
+                    <span class="timeline-type ${item.type}">${item.type}</span>
+                    <span class="timeline-date">${dateStr}</span>
+                    <div class="timeline-desc">${item.desc}</div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        document.getElementById('modal-body').innerHTML = html;
+    } catch (err) {
+        document.getElementById('modal-body').innerHTML = '<div class="empty-state">Error loading prospect details.</div>';
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+async function runNurture() {
+    try {
+        const res = await fetch('/nurture/run', {method: 'POST'});
+        const data = await res.json();
+        alert('Nurture cycle complete: ' + data.prospects_found + ' prospects found, ' + data.sequences_created + ' sequences created, ' + data.emails_sent + ' emails sent');
+        location.reload();
+    } catch (err) {
+        alert('Error running nurture cycle');
+    }
+}
+</script>
+
+</body>
+</html>
