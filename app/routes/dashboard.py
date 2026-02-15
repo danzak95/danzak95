@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
@@ -69,7 +70,7 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
     }
 
 
-def _stage_class(stage: str | None) -> str:
+def _stage_class(stage: Optional[str]) -> str:
     if not stage:
         return ""
     s = stage.lower()
