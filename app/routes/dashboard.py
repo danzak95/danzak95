@@ -168,6 +168,8 @@ async def dashboard_ui(request: Request, db: AsyncSession = Depends(get_db)):
             "company": p.company,
             "deal_stage": p.deal_stage,
             "stage_class": _stage_class(p.deal_stage),
+            "pain_point": p.pain_point,
+            "risk": p.risk,
             "close_date_display": close_date_display,
             "days_out": days_out,
             "days_class": days_class,

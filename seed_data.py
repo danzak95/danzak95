@@ -18,6 +18,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=45),
         "deal_stage": "Negotiation",
         "last_contact_date": datetime.utcnow() - timedelta(days=10),
+        "pain_point": "New hires taking 9+ months to hit quota. No structured onboarding program — reps are shadowing and figuring it out on their own.",
+        "risk": "High",
         "notes": "Strong interest in enterprise plan. Needs VP approval.",
     },
     {
@@ -27,6 +29,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=22),
         "deal_stage": "Proposal Sent",
         "last_contact_date": datetime.utcnow() - timedelta(days=3),
+        "pain_point": "Hired 15 reps last quarter, 6 already churned. Ramp time is 7 months avg and leadership is losing patience with the ROI on new hires.",
+        "risk": "Medium",
         "notes": "Proposal sent last week. Following up on pricing questions.",
     },
     {
@@ -36,6 +40,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=75),
         "deal_stage": "Discovery",
         "last_contact_date": datetime.utcnow() - timedelta(days=14),
+        "pain_point": "Expanding into EMEA and need to ramp 20+ reps in a new market. Current playbook is US-only and doesn't translate.",
+        "risk": "Low",
         "notes": "Initial demo went well. Wants to loop in their CTO.",
     },
     {
@@ -45,6 +51,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=12),
         "deal_stage": "Contract Review",
         "last_contact_date": datetime.utcnow() - timedelta(days=2),
+        "pain_point": "Top reps leaving because new hires are dead weight for 6 months. Managers spending 60% of time coaching instead of selling.",
+        "risk": "Low",
         "notes": "Legal reviewing contract. Expected to sign this month.",
     },
     {
@@ -54,6 +62,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=60),
         "deal_stage": "Qualification",
         "last_contact_date": datetime.utcnow() - timedelta(days=21),
+        "pain_point": "Just went through a reorg — merged two sales teams with different methodologies. Need to get 50 reps on the same page fast.",
+        "risk": "Medium",
         "notes": "Budget confirmed. Need to schedule technical deep-dive.",
     },
     {
@@ -63,6 +73,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=30),
         "deal_stage": "Negotiation",
         "last_contact_date": datetime.utcnow() - timedelta(days=5),
+        "pain_point": "Ramp time is 8 months but board wants it at 4. New product launch in Q3 and the current team can't sell it yet — need to upskill and onboard simultaneously.",
+        "risk": "High",
         "notes": "Negotiating multi-year deal. Wants volume discount.",
     },
     {
@@ -72,6 +84,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=90),
         "deal_stage": "Discovery",
         "last_contact_date": None,
+        "pain_point": "Series B company scaling from 5 to 25 reps. Founder-led sales — no repeatable process documented. Reps have zero playbook.",
+        "risk": "Medium",
         "notes": "Inbound lead from webinar. Needs initial outreach.",
     },
     {
@@ -81,6 +95,8 @@ PROSPECTS = [
         "expected_close_date": date.today() + timedelta(days=8),
         "deal_stage": "Verbal Commit",
         "last_contact_date": datetime.utcnow() - timedelta(days=1),
+        "pain_point": "40% of new AEs miss quota in first year. Existing training is PowerPoint decks from 2022. No call coaching, no certification, no accountability.",
+        "risk": "Low",
         "notes": "Verbally committed. Waiting on PO number.",
     },
 ]

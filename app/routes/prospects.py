@@ -19,6 +19,8 @@ class ProspectCreate(BaseModel):
     company: Optional[str] = None
     expected_close_date: Optional[date] = None
     deal_stage: Optional[str] = None
+    pain_point: Optional[str] = None
+    risk: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -29,6 +31,8 @@ class ProspectResponse(BaseModel):
     company: Optional[str]
     expected_close_date: Optional[date]
     deal_stage: Optional[str]
+    pain_point: Optional[str]
+    risk: Optional[str]
     last_contact_date: Optional[datetime]
     notes: Optional[str]
     created_at: datetime
