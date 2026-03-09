@@ -1,0 +1,44 @@
+Date: 2024-01-15
+Participants: Jane Smith (Ramp AE), Marcus Chen (CFO, Acme Corp), Sarah Park (VP Finance, Acme Corp)
+
+Jane: Thanks for making time today Marcus, Sarah. Can you walk me through what's driving the interest in a new spend management solution?
+
+Marcus: Sure. We're running on a patchwork of spreadsheets and a legacy corporate card program. Last quarter alone we had three instances of out-of-policy spend that we only caught after the fact. The reconciliation process is eating up about 15 hours a week of Sarah's team's time.
+
+Sarah: It's painful. We have 200 employees, half of them traveling or making purchases regularly, and we genuinely don't know what's being spent until the credit card statement arrives. It's embarrassing to present to the board.
+
+Jane: That's a real problem. What would it mean for the business if this isn't solved in the next 6 months?
+
+Marcus: Honestly, we're about to scale from 200 to 350 employees by end of year. If we don't fix this now, the problem triples. I've already told the board we're addressing it in Q1.
+
+Jane: Good to hear there's urgency. Who else is involved in evaluating solutions like this?
+
+Marcus: Sarah runs the day-to-day evaluation. I'm the one who signs off. We'd also want to loop in our Head of IT, David Kim, because we need SSO and integration with our ERP — we're on NetSuite.
+
+Jane: Got it. Is there an existing budget allocated for this?
+
+Marcus: We have a line item in the Q1 budget for software tools — we earmarked around $80,000 for the year. Whether this fits in that or needs a separate approval depends on the final number.
+
+Jane: That's helpful context. What does your buying process typically look like for software at this level?
+
+Sarah: We usually do a 2-3 week evaluation, get legal to review the contract, then Marcus approves. Nothing too complicated. We've done it before.
+
+Jane: Perfect. What other vendors are you looking at?
+
+Marcus: We've talked to Brex and Divvy. But honestly, your product demo last week was the most impressive. The real-time visibility and policy enforcement is exactly what we need. We just need to make sure the NetSuite integration works.
+
+Jane: Let's make sure we get that confirmed. I can set up a technical call with our solutions engineering team this week. Would Thursday work?
+
+Sarah: Thursday works for me.
+
+Marcus: I'll have David join.
+
+Jane: Great. To summarize — you're dealing with lack of spend visibility, out-of-policy spend, and 15 hours/week of reconciliation overhead. You need this solved before the headcount expansion. The decision is Marcus and Sarah with IT sign-off on integration. You have budget earmarked. And you want to validate the NetSuite integration before moving forward. Does that capture it?
+
+Marcus: That's exactly right.
+
+Jane: Excellent. I'll send a technical call invite for Thursday. After that, if the integration checks out, what would the path to a decision look like?
+
+Sarah: We'd want to run a pilot with maybe 20 employees for two weeks, then if that goes well Marcus would approve and we'd go to contract.
+
+Jane: Perfect. I'll include a suggested pilot structure in the calendar invite.
