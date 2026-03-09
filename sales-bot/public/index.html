@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Bot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">Sales Bot</span>
+    </div>
+    <button class="btn-primary" id="new-deal-btn">+ New Deal</button>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="deal-search" placeholder="Search deals…" />
+  </div>
+  <ul id="deal-list"></ul>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <!-- Empty state -->
+  <div id="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2>No deal selected</h2>
+    <p>Select a deal from the sidebar or create a new one to get started.</p>
+    <button class="btn-primary" id="empty-new-btn">+ New Deal</button>
+  </div>
+
+  <!-- Deal view (hidden until a deal is selected) -->
+  <div id="deal-view" class="hidden">
+
+    <!-- Deal header -->
+    <header id="deal-header">
+      <div class="deal-title-row">
+        <div>
+          <h1 id="deal-company"></h1>
+          <span id="deal-rep" class="deal-rep"></span>
+        </div>
+        <div class="deal-header-actions">
+          <button class="btn-secondary" id="add-transcript-btn">+ Add Transcript</button>
+          <button class="btn-primary" id="generate-brief-btn">Generate Brief</button>
+        </div>
+      </div>
+
+      <!-- Pipeline stage bar -->
+      <div class="pipeline-bar">
+        <div class="pipeline-stages" id="pipeline-stages"></div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab active" data-tab="gates">Gate Status</button>
+      <button class="tab" data-tab="brief">Pre-Call Brief</button>
+      <button class="tab" data-tab="transcripts">Transcripts</button>
+      <button class="tab" data-tab="stakeholders">Stakeholders</button>
+    </div>
+
+    <!-- Tab: Gates -->
+    <div id="tab-gates" class="tab-content">
+      <div id="gates-content"></div>
+    </div>
+
+    <!-- Tab: Brief -->
+    <div id="tab-brief" class="tab-content hidden">
+      <div id="brief-placeholder" class="brief-placeholder">
+        <span class="brief-icon">✦</span>
+        <p>Click <strong>Generate Brief</strong> to create an AI-powered pre-call brief based on your transcript history.</p>
+      </div>
+      <div id="brief-output" class="brief-output hidden"></div>
+    </div>
+
+    <!-- Tab: Transcripts -->
+    <div id="tab-transcripts" class="tab-content hidden">
+      <div id="transcripts-list"></div>
+    </div>
+
+    <!-- Tab: Stakeholders -->
+    <div id="tab-stakeholders" class="tab-content hidden">
+      <div id="stakeholders-content"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL: New Deal -->
+<div id="modal-new-deal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>New Deal</h2>
+      <button class="modal-close" data-modal="modal-new-deal">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>Company Name</label>
+      <input type="text" id="new-company" placeholder="Acme Corp" />
+      <label>Rep Name</label>
+      <input type="text" id="new-rep" placeholder="Jane Smith" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" data-modal="modal-new-deal">Cancel</button>
+      <button class="btn-primary" id="create-deal-btn">Create Deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add Transcript -->
+<div id="modal-transcript" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Add Transcript</h2>
+      <button class="modal-close" data-modal="modal-transcript">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>Call Date</label>
+      <input type="date" id="transcript-date" />
+
+      <label>Upload .txt file</label>
+      <div class="drop-zone" id="drop-zone">
+        <div class="drop-icon">📄</div>
+        <p>Drop a .txt file here, or <label class="file-link" for="file-input">browse</label></p>
+        <input type="file" id="file-input" accept=".txt" hidden />
+        <p id="file-name" class="file-name hidden"></p>
+      </div>
+
+      <div class="divider">or paste transcript below</div>
+
+      <textarea id="transcript-text" placeholder="Speaker Name: transcript text here…" rows="8"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" data-modal="modal-transcript">Cancel</button>
+      <button class="btn-primary" id="submit-transcript-btn">Analyze Transcript</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
