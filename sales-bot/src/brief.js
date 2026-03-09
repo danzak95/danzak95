@@ -3,7 +3,8 @@ import { formatTranscriptsForPrompt } from './ingest.js';
 import { GATE_DEFINITIONS, gatesSummary } from './gates.js';
 import { stageName } from './detect.js';
 
-const client = new Anthropic();
+const MOCK_MODE = process.env.MOCK_MODE === 'true';
+const client = MOCK_MODE ? null : new Anthropic();
 
 const SYSTEM_PROMPT = `You are a sales intelligence assistant for a Ramp sales rep. You analyze call transcripts to determine deal stage, evaluate decision tree gates, identify blockers, and generate pre-call briefs. Be direct, specific, and actionable. Reference actual transcript evidence when making assessments. Never hallucinate details not present in the transcripts.`;
 
@@ -12,6 +13,112 @@ const SYSTEM_PROMPT = `You are a sales intelligence assistant for a Ramp sales r
  * Streams output to stdout and returns the final text.
  */
 export async function generateBrief(deal, gateDetails, blockers, signals, regressionFlags) {
+  if (MOCK_MODE) {
+    const brief = `
+## CURRENT STAGE
+**Stage 2 — Qualification** | 4/5 gates confirmed
+
+Discovery is complete. Qualification is substantially progressed: economic buyer (Marcus Chen, CFO) identified and accessible, champion (Sarah Park) active, procurement process documented, and $80k budget acknowledged. The one open gate is stakeholder mapping — David Kim (Head of IT) is a named technical approver who has not yet been introduced.
+
+---
+
+## DESIRED OUTCOME
+Get David Kim on the Thursday technical call and confirm his SSO + NetSuite integration requirements so the deal can advance to Stage 3 (Technical Validation) immediately following.
+
+---
+
+## OPEN GATES
+
+**[Stage 2] Are all stakeholders mapped?**
+- Status: BLOCKED
+- Evidence: Marcus referenced David Kim as required for SSO and ERP integration decisions, but David has not been on any call and has not been formally introduced.
+- Action needed: Confirm David Kim is on Thursday's technical call; send him pre-read materials beforehand.
+
+**[Stage 2] Is there confirmed budget?**
+- Status: CONFIRMED with a caveat
+- Evidence: "$80,000 earmarked for the year" — but Marcus noted the final number might need a separate approval depending on price. Pricing conversation hasn't happened yet.
+- Action needed: Surface ballpark pricing before or during the next call to pressure-test budget fit.
+
+**[Stage 3] Is Ramp the vendor of choice?**
+- Status: UNADDRESSED
+- Evidence: Marcus said Ramp's demo was "most impressive" but Brex and Divvy are still in consideration. Technical validation hasn't occurred.
+- Action needed: After the NetSuite integration is confirmed, ask directly: "What would need to be true for Ramp to win this?"
+
+---
+
+## ROADBLOCKS
+
+1. **David Kim not yet engaged**
+   - Blocker: He controls SSO and ERP integration sign-off and has not been on a call.
+   - Recommended action: Confirm he's on Thursday's technical call. Send him a brief pre-read on Ramp's NetSuite connector and SSO (SAML/SCIM) support before the call.
+
+2. **Technical validation pending**
+   - Blocker: Until NetSuite integration and SSO are confirmed working, Marcus and Sarah cannot move forward.
+   - Recommended action: Have Solutions Engineering prepare a live NetSuite demo for Thursday. Come with a written integration checklist to leave behind.
+
+3. **Competitive pressure from Brex and Divvy**
+   - Blocker: Deal is not yet sole-sourced.
+   - Recommended action: After technical validation, directly ask "What would need to be true for Ramp to win?" and position Ramp's real-time policy enforcement vs. competitors' reactive spend controls.
+
+---
+
+## STAKEHOLDER MAP
+
+| Name | Title | Role | Status |
+|------|-------|------|--------|
+| Marcus Chen | CFO | Economic Buyer | ✓ Engaged — decision authority confirmed |
+| Sarah Park | VP Finance | Champion | ✓ Engaged — running evaluation |
+| David Kim | Head of IT | Technical Buyer | ✗ Named but not yet on a call |
+
+**Missing:** Executive sponsor above Marcus not identified. Legal/procurement contact unknown (will matter in Stage 5).
+
+---
+
+## KEY MOMENTS
+
+> *"Your product demo last week was the most impressive. The real-time visibility and policy enforcement is exactly what we need. We just need to make sure the NetSuite integration works."*
+> — Marcus Chen (CFO) — strongest buying signal; conditions the deal on technical validation.
+
+> *"We genuinely don't know what's being spent until the credit card statement arrives. It's embarrassing to present to the board."*
+> — Sarah Park (VP Finance) — emotional pain articulation; use this language back to them.
+
+> *"If we don't fix this now, the problem triples."*
+> — Marcus Chen — self-generated urgency tied to headcount growth; anchor future urgency arguments here.
+
+> *"We usually do a 2-3 week evaluation, get legal to review the contract, then Marcus approves. Nothing too complicated."*
+> — Sarah Park — procurement process is clean and fast; no procurement red flags.
+
+---
+
+## SUGGESTED TALK TRACK
+
+**Opening:**
+"Marcus, Sarah — thanks for setting up Thursday. Before we get into the technical details with David, I wanted to do a quick check-in. You mentioned the demo was the most impressive you'd seen. What's your current thinking on the evaluation — are we tracking toward a decision by end of Q1?"
+
+**Key questions to ask:**
+1. "David, to make sure we cover everything in today's call — can you walk me through your NetSuite environment and how you currently handle SSO for SaaS tools?" *(unblocks technical validation)*
+2. "Marcus, you mentioned the $80k budget earmark — have you had a chance to think about what the right number looks like for a 200-seat deployment? I want to make sure we're aligned before we put a formal proposal together." *(pressure-tests budget fit)*
+3. "After today's technical call, what would the path to a decision look like on your end? Are there any other stakeholders we haven't met yet?" *(surfaces hidden blockers)*
+4. "You mentioned Brex and Divvy are also in the mix — what are you seeing as the key differences so far?" *(competitive intel + chance to differentiate)*
+
+**Objection handling:**
+- *"We need to see if the integration actually works before we commit"* → "Completely fair — that's exactly why we're here today. Our SE team has done 40+ NetSuite implementations. Let's get your specific config mapped out and I can have a written integration confirmation to you by Friday."
+- *"The price needs to fit the budget"* → "I hear you. What I'd suggest is — let's nail the technical fit today, and then I'll put together a proposal built around your 200-seat rollout with a path to the 350-seat expansion. That way you can compare apples to apples."
+
+---
+
+## NEXT STEPS
+
+1. **Jane Smith** — Send David Kim a pre-read (Ramp NetSuite connector overview + SSO guide) before Thursday's call. *Today.*
+2. **Solutions Engineering** — Prepare live NetSuite demo for Thursday's call and bring written integration checklist. *Before Thursday.*
+3. **Jane Smith** — At the end of Thursday's call, propose a 20-employee pilot structure and get verbal commitment from Marcus. *Thursday.*
+4. **Jane Smith** — Follow up with ballpark pricing by end of week so Marcus can pressure-test against the $80k budget. *Friday.*
+5. **Marcus Chen / Sarah Park** — Confirm David Kim's attendance on Thursday's call. *Before Thursday.*
+`;
+    process.stdout.write(brief);
+    return brief;
+  }
+
   const transcriptText = formatTranscriptsForPrompt(deal.transcripts);
   const { confirmed, total } = gatesSummary(deal.gates, deal.current_stage);
   const stageLabel = stageName(deal.current_stage);

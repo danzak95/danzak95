@@ -1,7 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { formatTranscriptsForPrompt } from './ingest.js';
 
-const client = new Anthropic();
+const MOCK_MODE = process.env.MOCK_MODE === 'true';
+const client = MOCK_MODE ? null : new Anthropic();
 
 const SYSTEM_PROMPT = `You are a sales intelligence assistant for a Ramp sales rep. You analyze call transcripts to determine deal stage, evaluate decision tree gates, identify blockers, and generate pre-call briefs. Be direct, specific, and actionable. Reference actual transcript evidence when making assessments. Never hallucinate details not present in the transcripts.`;
 
@@ -173,6 +174,60 @@ export const GATE_DEFINITIONS = {
  * Returns updated gates object + a list of blockers with recommended actions.
  */
 export async function evaluateGates(transcripts, currentStage) {
+  if (MOCK_MODE) {
+    const mockDetails = {
+      1: {
+        pain_articulated:         { status: 'confirmed', evidence: '15hrs/week reconciliation, 3 out-of-policy incidents last quarter', blocker: null },
+        pain_significant:         { status: 'confirmed', evidence: 'CFO told the board it\'s being addressed; headcount scaling triples the problem', blocker: null },
+        decision_timeline:        { status: 'confirmed', evidence: 'Q1 board commitment; headcount expansion deadline end of year', blocker: null },
+        internal_agreement:       { status: 'unaddressed', evidence: null, blocker: 'David Kim (Head of IT) has not been on a call yet; only Marcus and Sarah have engaged' },
+      },
+      2: {
+        economic_buyer_identified: { status: 'confirmed', evidence: '"I\'m the one who signs off" — Marcus Chen, CFO', blocker: null },
+        stakeholders_mapped:       { status: 'blocked', evidence: 'Marcus, Sarah, David Kim mentioned but David has not been introduced', blocker: 'David Kim (Head of IT) identified as required approver for SSO/ERP but not yet engaged' },
+        procurement_understood:    { status: 'confirmed', evidence: '2-3 week eval → legal review → CFO approval', blocker: null },
+        champion_established:      { status: 'confirmed', evidence: 'Sarah Park running day-to-day evaluation; joined the call', blocker: null },
+        budget_confirmed:          { status: 'confirmed', evidence: '$80k earmarked in Q1 software budget; may need separate approval depending on price', blocker: null },
+      },
+      3: {
+        technical_evaluation_done:        { status: 'unaddressed', evidence: null, blocker: 'Thursday technical call not yet held' },
+        technical_requirements_addressed: { status: 'unaddressed', evidence: null, blocker: 'NetSuite integration and SSO requirements not yet validated' },
+        vendor_of_choice:                 { status: 'unaddressed', evidence: 'Positive sentiment expressed but Brex and Divvy still in evaluation', blocker: 'Competitive evaluation ongoing; technical validation not complete' },
+        security_compliance_passed:       { status: 'unaddressed', evidence: null, blocker: 'No mention of security review initiated' },
+      },
+    };
+
+    const gates = {};
+    for (let s = 1; s <= 6; s++) {
+      const stageDef = GATE_DEFINITIONS[s];
+      gates[s] = {};
+      for (const key of Object.keys(stageDef.gates)) {
+        gates[s][key] = mockDetails[s]?.[key]?.status || 'unaddressed';
+      }
+    }
+
+    const blockers = [];
+    for (let s = 1; s <= currentStage; s++) {
+      const stageDef = GATE_DEFINITIONS[s];
+      for (const [key, def] of Object.entries(stageDef.gates)) {
+        const detail = mockDetails[s]?.[key];
+        if (detail?.status === 'blocked' || (detail?.status === 'unaddressed' && detail?.blocker)) {
+          blockers.push({
+            stage: s,
+            stage_label: stageDef.label,
+            gate: key,
+            question: def.question,
+            blocker: detail.blocker,
+            recommended_action: def.blocked_action,
+            evidence: detail.evidence,
+          });
+        }
+      }
+    }
+
+    return { gates, gateDetails: mockDetails, blockers, regression_flags: [] };
+  }
+
   const transcriptText = formatTranscriptsForPrompt(transcripts);
 
   // Build the gate questions for stages 1..currentStage
